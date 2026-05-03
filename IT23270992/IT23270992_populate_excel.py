@@ -1,0 +1,130 @@
+import openpyxl
+from openpyxl import Workbook
+
+def populate_excel():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = " Test cases"
+    
+    headers = ["TC ID", "Input length type", "Input", "Expected output", "Actual output", "Status", "Singlish input types covered", "Evidence or rationale for the input type covered"]
+    ws.append(headers)
+    
+    test_cases = [
+        ["Neg_0001", "S", "Lunch gaththada?", "ලන්ච් ගත්තද?", "Lunch ගත්තද?", "FAIL", "Question forms", "Rationale: The overall message is a question involving an English word."],
+        ["Neg_0002", "M", "oyage amme koheda inne? eya enna puluwanda ada?",
+         "ඔයාගේ අම්මේ කොහේද ඉන්නේ? එයා එන්න පුළුවන්ද අද?",
+         "oya amme koheda inne? eya enna puluwanda ada?",
+         "FAIL", "Question forms",
+         "Rationale: Multi-part question; system fails to transliterate 'oyage' correctly."],
+        ["Neg_0003", "S", "Book eka denna", "බුක් එක දෙන්න", "Book එක දෙන්න", "FAIL", "Command forms", "Rationale: Input is a command involving an English object name."],
+       ["Neg_0004", "S", "Happy new year nande",
+         "හැපී නිව් ඉයර් නෑන්දේ",
+         "Happy new year nande",
+         "FAIL", "Greetings",
+         "Rationale: English greeting with Sinhala kinship term 'nande'; system fails entirely."],
+ 
+        ["Neg_0005", "S", "Good morning", "ගුඩ් මෝර්නින්", "ගුඩ් මෝනින්", "FAIL", "Greetings", "Rationale: Standard English greeting used in chat."],
+        ["Neg_0006", "M", "please mage number eka save karala call karanna",
+         "ප්ලීස් මගේ නම්බර් එක සේව් කරලා කෝල් කරන්න",
+         "please mage number eka save karala call karanna",
+         "FAIL", "Requests",
+         "Rationale: Polite request mixing English words 'please', 'save', 'call' with Singlish; not transliterated."],
+        ["Neg_0007", "S", "pls help me", "ප්ලීස් හෙල්ප් මී", "please help me", "FAIL", "Requests", "Rationale: A request with abbreviated English words."],
+        ["Neg_0008", "M", "mama heta early morning class ekak thiyenawa",
+         "මම හේත early morning ක්ලාස් එකක් තියෙනවා",
+         "mama heta early morning class ekak thiyenawa",
+         "FAIL", "Multi-Word English Phrases in Singlish",
+         "Rationale: Multi-word phrase 'early morning class' embedded in Singlish; partially untransliterated."],
+        ["Neg_0009", "M", "api out of stock wela thiyenawa, sorry",
+         "අපි out of stock වෙලා තියෙනවා, සොරී",
+         "api out of stock wela thiyenawa, sorry",
+         "FAIL", "Multi-Word English Phrases in Singlish",
+         "Rationale: Multi-word English phrase 'out of stock' not transliterated."],
+        ["Neg_0010", "S", "No mama danne ne", "නෝ මම දන්නේ නෑ", "නො මම දන්නේ නෑ", "FAIL", "Responses", "Rationale: A response starting with an English word."],
+        ["Neg_0011", "S", "small small", "ස්මෝල් ස්මෝල්", "small small", "FAIL", "Repeated Words", "Rationale: Repeating English words for emphasis."],
+         ["Neg_0012", "M", "mee link eka balanna: www.example.lk",
+         "මේ ලින්ක් එක බලන්න: www.example.lk",
+         "mee link eka balanna: www.example.lk",
+         "FAIL", "Online Identifiers in Singlish",
+         "Rationale: URL embedded in Singlish sentence causes full transliteration failure."],
+        ["Neg_0013", "S", "o_O", "(Emoji/Face)", "ඕ_ඕ", "FAIL", "Inputs with Punctuation Marks", "Rationale: Uses underscores and casing for a face emoji."],
+        ["Neg_0014", "S", "(y)", "(Thumbs up)", "(y)", "FAIL", "Inputs with Punctuation Marks", "Rationale: Uses parentheses for a shortcut emoji."],
+        ["Neg_0015", "S", "oaya", "ඔයා", "ඔයා", "PASS", "Romanization / Spelling Variants", "Rationale: Common variant 'oaya' for 'ඔයා'."],
+        ["Neg_0016", "S", "apiia", "අපි", "අපියියා", "FAIL", "Romanization / Spelling Variants", "Rationale: Unusual spelling variant for 'අපි'."],
+        ["Neg_0017", "S", "car eka", "කාර් එක", "කාර් එක", "PASS", "Isolated English Word Insertions in Singlish", "Rationale: 'car' is an English word used in a Singlish phrase."],
+        ["Neg_0018", "S", "bus eka", "බස් එක", "bus එක", "FAIL", "Isolated English Word Insertions in Singlish", "Rationale: 'bus' is an English word used in a Singlish phrase."],
+        ["Neg_0019", "M", "How are you", "හව් ආ යූ", "How are you", "FAIL", "Multi-Word English Phrases in Singlish", "Rationale: A full English phrase used in a chat context."],
+        ["Neg_0020", "M", "meeting eka postpone karada? hari nam mawa dannapan",
+         "මීටිං එක පෝස්ට්‍පෝන් කරාද? හරි නම් මාව දන්නාපං",
+         "meeting eka postpone karada? hari nam mawa dannapan",
+         "FAIL", "Isolated English Word Insertions in Singlish",
+         "Rationale: English 'postpone' embedded in Singlish question; partially transliterated."],
+        ["Neg_0021", "S", "wifi password", "වයිෆයි පාස්වර්ඩ්", "wifi password", "FAIL", "English Digital Terms in Singlish", "Rationale: Tech terms 'wifi' and 'password'."],
+        ["Neg_0022", "S", "internet eka", "ඉන්ටර්නෙට් එක", "internet eka", "FAIL", "English Digital Terms in Singlish", "Rationale: Tech term 'internet'."],
+        ["Neg_0023", "S", "FB eke danna", "එෆ් බී එකේ දාන්න", "FB eke danna", "FAIL", "Platform/App Names in Singlish", "Rationale: Platform abbreviation 'FB'."],
+        ["Neg_0024", "S", "Youtube balanna", "යූටියුබ් බලන්න", "Youtube balanna", "FAIL", "Platform/App Names in Singlish", "Rationale: App name 'Youtube'."],
+["Neg_0025", "M", "API eka broken wela thiyenawa, fix karanna one",
+         "API එක බ්‍රෝකන් වෙලා තියෙනවා, ෆික්ස් කරන්න ඕනේ",
+         "API eka broken wela thiyenawa, fix karanna one",
+         "FAIL", "English Abbreviations/Acronyms in Singlish",
+         "Rationale: Tech acronym 'API' and verbs 'broken', 'fix' not transliterated."],
+        ["Neg_0026", "S", "USA yanawa", "යූ එස් ඒ යනවා", "USA yanawa", "FAIL", "English Abbreviations/Acronyms in Singlish", "Rationale: Country abbreviation 'USA'."],
+        ["Neg_0027", "S", "uni yanawa", "යුනි යනවා", "uni yanawa", "FAIL", "English Clipped Forms in Singlish", "Rationale: Clipped word 'uni' for university."],
+        ["Neg_0028", "S", "exam eka", "එග්සෑම් එක", "exam eka", "FAIL", "English Clipped Forms in Singlish", "Rationale: Clipped word 'exam' for examination."],
+        ["Neg_0029", "S", "London yanawa", "ලන්ඩන් යනවා", "London yanawa", "FAIL", "Place Names Embedded in Singlish", "Rationale: Foreign city name 'London'."],
+              ["Neg_0030", "M", "mama Japan yanawa next month, visa ganne kohomada?",
+         "මම ජපාන් යනවා next month, විසා ගන්නේ කොහොමද?",
+         "mama Japan yanawa next month, visa ganne kohomada?",
+         "FAIL", "Place Names Embedded in Singlish",
+         "Rationale: Country name 'Japan' and phrase 'next month' not fully transliterated."],
+        ["Neg_0031", "S", "John enawa", "ජෝන් එනවා", "John enawa", "FAIL", "Person Names Embedded in Singlish", "Rationale: English person name 'John'."],
+        ["Neg_0032", "S", "Kamal koheada?", "කමල් කොහේද?", "Kamal koheada?", "FAIL", "Person Names Embedded in Singlish", "Rationale: Local person name 'Kamal' in English spelling."],
+        ["Neg_0033", "S", "1st parata", "1 වෙනි පාරට", "1st parata", "FAIL", "Inputs with Numbers and Numeric Suffixes", "Rationale: Number with English suffix 'st'."],
+        ["Neg_0034", "S", "2nd floor", "2 වෙනි තට්ටුව", "2nd floor", "FAIL", "Inputs with Numbers and Numeric Suffixes", "Rationale: Number with English suffix 'nd'."],
+         ["Neg_0035", "M", "don't worry, api heta fix karamu eka.",
+         "don't worry, අපි හෙට fix කරමු ඒක.",
+         "don't worry, api heta fix karamu eka.", "FAIL",
+         "Multi-Word English Phrases in Singlish",
+         "Rationale: English phrase \"don't worry\" used before Singlish continuation."],
+        ["Neg_0036", "S", "Dollars kiyakda?", "ඩොලර් කීයක්ද?", "Dollars kiyakda?", "FAIL", "Inputs with Currency", "Rationale: Currency name 'Dollars' in English."],
+        ["Neg_0037", "S", "Morning enna", "මෝර්නින් එන්න", "Morning enna", "FAIL", "Inputs with Time Formats", "Rationale: Time of day in English."],
+        ["Neg_0038", "S", "midnight 12ta", "මිඩ්නයිට් 12ට", "midnight 12ta", "FAIL", "Inputs with Time Formats", "Rationale: Time term 'midnight'."],
+         ["Neg_0039", "M", "mama ada office yanna late una, traffic jam una nisa.",
+         "මම අද office යන්න late උනා, traffic jam උනා නිසා.",
+         "mama ada office yanna late una, traffic jam una nisa.", "FAIL",
+         "Multi-Word English Phrases in Singlish",
+         "Rationale: Multi-word English phrase 'traffic jam' embedded in Singlish sentence."],
+        ["Neg_0040", "S", "Jan 1st", "ජනවාරි 1", "Jan 1st", "FAIL", "Inputs with Dates", "Rationale: Abbreviated month 'Jan'."],
+        ["Neg_0041", "S", "5km dura", "5කි.මී. දුර", "5km dura", "FAIL", "Inputs with Unit of Measurements", "Rationale: Metric unit 'km'."],
+        ["Neg_0060", "M",
+         "mama ada 2kg rice, 500g dhal, saha 1L milk gatta. bill eka Rs. 1850k wage aawa.",
+         "මම අද 2kg රයිස්, 500g දාල්, සහ 1L මිල්ක් ගත්තා. "
+         "බිල් එක රු. 1850ක් වගේ ආවා.",
+         "mama ada 2kg rice, 500g dhal, saha 1L milk gatta. bill eka Rs. 1850k wage aawa.",
+         "FAIL", "Inputs with Unit of Measurements",
+         "Rationale: Multiple measurement units (2kg, 500g, 1L) alongside currency Rs. 1850k; system fails to transliterate any."],
+        ["Neg_0043", "S", "mcn koheda?", "මචං කොහෙද?", "mcn koheda?", "FAIL", "Inputs with Slang and Casual Phrasing", "Rationale: Abbreviated slang 'mcn' for 'machan'."],
+        ["Neg_0044", "S", "bro mokada?", "බ්‍රෝ මොකද?", "bro mokada?", "FAIL", "Inputs with Slang and Casual Phrasing", "Rationale: Casual term 'bro'."],
+        ["Neg_0045", "S", "@user", "@යූසර්", "@user", "FAIL", "Online Indentifiers in Singlish", "Rationale: Social media handle format."],
+        ["Neg_0046", "S", "#test", "#ටෙස්ට්", "#test", "FAIL", "Online Indentifiers in Singlish", "Rationale: Hashtag format."],
+        ["Neg_0047", "S", "oyata puluwanda? :D", "ඔයාට පුලුවන්ද? :D", "ඔයාට පුලුවන්ද? :ඩී", "FAIL", "Inputs Containing Emojis", "Rationale: Uses character emoji ':D'."],
+        ["Neg_0048", "S", "wow! ❤️", "වාව්! ❤️", "වාව්! \u2764\ufe0f", "PASS", "Inputs Containing Emojis", "Rationale: Uses unicode heart emoji."],
+       ["Neg_0049", "L",
+         "Machan, mama heta interview ekakta yanna one, eka corporate company ekak, mata suit ekak nathnam tie ekak thiyanawada kiyala dannawa ne, oya dannawada kohomada dress up karanne, mama godak nervous, first time meka wage ekakta yanne, oyata experience thiyanawada meka wage ekakta yanna?",
+         "මචං, මම හෙට interview එකකට යන්න ඕනේ, ඒක corporate company එකක්, මට suit එකක් නැත්නම් tie එකක් තියෙනවාද කියලා දන්නෑ, ඔයා දන්නවාද කොහොමද dress up කරන්නේ, මම ගොඩක් nervous, first time මේකවගේ එකකට යන්නේ, ඔයාට experience තියෙනවාද මේකවගේ එකකට යන්න?",
+         "Machan, mama heta interview ekakta yanna one, eka corporate company ekak, mata suit ekak nathnam tie ekak thiyanawada kiyala dannawa ne, oya dannawada kohomada dress up karanne, mama godak nervous, first time meka wage ekakta yanne, oyata experience thiyanawada meka wage ekakta yanna?",
+         "FAIL",
+         "Multi-Word English Phrases in Singlish",
+         "Rationale: Long L-type input mixing Singlish with English words 'interview', 'corporate', 'suit', 'tie', 'dress up', 'nervous', 'first time', 'experience'; tool cannot handle complex mixed L-length input."],
+        ["Neg_0050", "S", "gm mcn", "ජී එම් මචං", "ගම mcn", "FAIL", "Greetings", "Rationale: Double abbreviation 'gm' (good morning) and 'mcn' (machan)."],
+        
+    ]
+    
+    for row in test_cases:
+        ws.append(row)
+        
+    wb.save("IT23270992_Assignment 1 - Test cases.xlsx")
+    print("Step 1: Excel structure populated with 60 test cases.")
+
+if __name__ == "__main__":
+    populate_excel()
